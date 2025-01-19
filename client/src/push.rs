@@ -501,9 +501,12 @@ pub async fn upload_path(
         }
     };
 
+    let {width: terminal_width} = term_size::dimensions();
+    let terminal_width = ;
     let template = format!(
-        "{{spinner}} {: <20.20} {{bar:40.green/blue}} {{human_bytes:10}} ({{average_speed}})",
+        "{{spinner}} {: <width$.width$} {{bar:40.green/blue}} {{human_bytes:10}} ({{average_speed}})",
         path.name(),
+        width = 20,
     );
     let style = ProgressStyle::with_template(&template)
         .unwrap()
