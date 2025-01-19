@@ -26,38 +26,40 @@
     };
   };
 
-  outputs = inputs @ { self, flake-parts, ... }: let
-    supportedSystems = [
-      "x86_64-linux"
-      "aarch64-linux"
-      "riscv64-linux"
-      "aarch64-darwin"
-      "x86_64-darwin"
-    ];
+  outputs = inputs @ { self, flake-parts, ... }:
+    let
+      supportedSystems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "riscv64-linux"
+        "aarch64-darwin"
+        "x86_64-darwin"
+      ];
 
-    inherit (inputs.nixpkgs) lib;
+      inherit (inputs.nixpkgs) lib;
 
-    modules = builtins.foldl' (acc: f: f acc) ./flake [
-      builtins.readDir
-      (lib.filterAttrs (name: type:
-        type == "regular" && lib.hasSuffix ".nix" name
-      ))
-      (lib.mapAttrsToList (name: _:
-        lib.path.append ./flake name
-      ))
-    ];
+      modules = builtins.foldl' (acc: f: f acc) ./flake [
+        builtins.readDir
+        (lib.filterAttrs (name: type:
+          type == "regular" && lib.hasSuffix ".nix" name
+        ))
+        (lib.mapAttrsToList (name: _:
+          lib.path.append ./flake name
+        ))
+      ];
 
-  in flake-parts.lib.mkFlake { inherit inputs; } {
-    imports = modules;
-    systems = supportedSystems;
+    in
+    flake-parts.lib.mkFlake { inherit inputs; } {
+      imports = modules;
+      systems = supportedSystems;
 
-    debug = true;
-  };
+      debug = true;
+    };
 
 
   nixConfig = {
-    extra-substituters = [ "https://attic.tam.ma/attic" ];
-    extra-trusted-public-keys = [ "attic:Dc088G5QEZnihlLq73D4RWw8PbQ+SIe0UHslzqXdULs=" ];
+    extra-substituters = "https://staging.attic.rs/attic-ci";
+    extra-trusted-public-keys = "attic-ci:U5Sey4mUxwBXM3iFapmP0/ogODXywKLRNgRPQpEXxbo=";
   };
-  
+
 }
